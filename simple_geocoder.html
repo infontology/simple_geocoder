@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps JavaScript API v3 Example: Map Geolocation</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+     <link href="https://google-developers.appspot.com/maps/documentation/javascript/examples/default.css" rel="stylesheet">
+   <!--
+    Include the maps javascript with sensor=true because this code is using a
+    sensor (a GPS locator) to determine the user's location.
+    See: https://developers.google.com/apis/maps/documentation/javascript/basics#SpecifyingSensor
+    -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+
+    <script>
+   
+
+
+
+
+    function pausecomp(ms) {
+ms += new Date().getTime();
+while (new Date() < ms){}
+} 
+ //http://stackoverflow.com/questions/7659187/adding-time-delay-to-google-map-geocode 
+function pause(milliseconds) {
+  var dt = new Date();
+  while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+}
+
+
+
+  
+
+function geocodeAddress(i,all_addresses) {
+     
+     var geocoder = new google.maps.Geocoder();
+
+
+
+     geocoder.geocode( {'address': all_addresses[i]}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            //places[i] = results[0].geometry.location;
+            console.log(results[0].geometry.location)
+            // Adding the markers 
+            console.log(map)
+            map.setZoom(12)
+            map.setCenter(new google.maps.LatLng(results[0].geometry.location.kb,results[0].geometry.location.lb,results[0].geometry.location.kb));
+            document.getElementById('results').value = document.getElementById('results').value + all_addresses[i] +";"+ + results[0].geometry.location.kb + ";" + results[0].geometry.location.lb;
+            document.getElementById("results").scrollTop = document.getElementById("results").value.length
+            var marker = new google.maps.Marker({position: results[0].geometry.location, map: map});
+           
+        } else { 
+            alert("Geocode was not successful for the following reason: " + status); 
+        }
+    })
+}
+
+
+
+    function processWords(){
+    
+      var geoIndex = 0;
+      var geoTimer = setInterval(geocode, 3000);  // 200 milliseconds (to try out)
+
+
+    var all_txt_addresses = document.getElementById('txt_all_words')
+    var all_addresses = all_txt_addresses.value.split(';')
+
+    var all_words = document.getElementById('given_address')
+
+    derp = [];
+   document.getElementById('results').value = 'address;lat;lng\n'
+
+
+
+function geocode() {
+    
+    if (geoIndex < all_addresses.length) {
+          document.getElementById('counter').innerHTML = 'geocoded ' + (geoIndex+1) +'/' + all_addresses.length + ' of given addresses';
+
+        geocodeAddress(geoIndex,all_addresses);
+        ++geoIndex;
+    }
+    else {
+        clearInterval(geoTimer);
+    }
+}
+
+ 
+
+    }
+
+
+    function drop() {
+        for (var i = 0; i < neighborhoods.length; i++) {
+          setTimeout(function() {
+            addMarker();
+          }, i * 200);
+        }
+      }
+
+      function addMarker() {
+        markers.push(new google.maps.Marker({
+          position: neighborhoods[iterator],
+          map: map,
+          icon: paw,
+          draggable: false,
+          animation: google.maps.Animation.DROP
+        }));
+        iterator++;
+      }
+
+      var map;
+
+      function initialize() {
+        var mapOptions = {
+          zoom: 7,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+        map.setCenter(new google.maps.LatLng(61,24));
+        var image = 'step.png';
+        
+      }
+  
+      function handleNoGeolocation(errorFlag) {
+        if (errorFlag) {
+          var content = 'Error: The Geolocation service failed.';
+        } else {
+          var content = 'Error: Your browser doesn\'t support geolocation.';
+        }
+
+        var options = {
+          map: map,
+          position: new google.maps.LatLng(60, 105),
+          content: content
+        };
+
+        var infowindow = new google.maps.InfoWindow(options);
+        map.setCenter(options.position);
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+
+    </script>
+  </head>
+  <body>
+    <div id="distance"></div>
+
+     <!--  <button id="drop" onclick="drop()">Drop Markers</button> -->
+
+     <form name="words" id="words_form" action="" action="#">
+       <textarea name="all_words" id="txt_all_words" rows="10" cols="50"></textarea>
+       <!-- <input type="txt" id="given_address" />-->
+   
+         <input type="button" name="submit" value="Generate" onclick="processWords();" />
+    </form>
+    <div style="height:350px; width:350px; overflow:hidden;">
+    <div id="map-canvas"></div>
+
+    
+ </div>
+      <div id="counter"></div>
+      <textarea id="results" rows="10" cols="50">
+</textarea>
+  </body>
+</html>
