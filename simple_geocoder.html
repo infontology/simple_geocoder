@@ -42,12 +42,26 @@ function geocodeAddress(i,all_addresses) {
      geocoder.geocode( {'address': all_addresses[i]}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             //places[i] = results[0].geometry.location;
-            console.log(results[0].geometry.location)
+            console.log(results[0].geometry.location,results[0].geometry.location)
+            p =results[0].geometry.location
+            count = 0
+            var lon;
+            var lat;
+            //first two keys or geo location json are lat and lon, extract information from json
+            for(var key in p){
+              if (count == 0) {lat = p[key]}
+               
+              if (count == 1) {lon = p[key]}
+              count++;
+                
+            }
+            console.log(lat,lon)
             // Adding the markers 
             console.log(map)
             map.setZoom(12)
-            map.setCenter(new google.maps.LatLng(results[0].geometry.location.kb,results[0].geometry.location.lb,results[0].geometry.location.kb));
-            document.getElementById('results').value = document.getElementById('results').value + all_addresses[i] +";"+ + results[0].geometry.location.kb + ";" + results[0].geometry.location.lb;
+
+            map.setCenter(new google.maps.LatLng(lat,lon));
+            document.getElementById('results').value = document.getElementById('results').value + all_addresses[i] +";"+ + lat + ";" + lon;
             document.getElementById("results").scrollTop = document.getElementById("results").value.length
             var marker = new google.maps.Marker({position: results[0].geometry.location, map: map});
            
